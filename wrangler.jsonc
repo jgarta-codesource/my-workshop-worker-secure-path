@@ -6,19 +6,9 @@
 	"observability": {
 		"enabled": true
 	},
-	
-	/**
-	 * The 'route' from your .toml file becomes a 'routes' array in .jsonc.
-	 * Each route is a string in the array.
-	 */
 	"routes": [
 		"tunnel.jgarta.services/secure*"
 	],
-	
-	/**
-	 * The '[[r2_buckets]]' block from .toml becomes an 'r2_buckets' array of objects.
-	 * Your original snippet had this outside the main JSON object.
-	 */
 	"r2_buckets": [
 		{
 			"binding": "FLAG_BUCKET",
