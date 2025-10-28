@@ -7,7 +7,7 @@
 		"enabled": true
 	},
 	"routes": [
-		"tunnel.jgarta.services/secure*"
+		"tunnel.CensoredDomain/secure*"
 	],
 	"r2_buckets": [
 		{
