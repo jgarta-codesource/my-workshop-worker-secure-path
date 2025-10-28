@@ -85,10 +85,8 @@ router.get('/secure/:country', async (request: IRequest, env: Env) => {
 		return new Response('Country code missing', { status: 400 });
 	}
 
-	// Construct the object key. We assume flags are stored as e.g., "us.svg"
-	// You might need to adjust this logic if your filenames are different.
-	
-    // FIX: Used backticks (`) for template literal string
+	// Construct the object key,lags are stored as "mx.svg"
+
 	const objectKey = `${countryCode}.svg`
 
 	try {
@@ -96,8 +94,7 @@ router.get('/secure/:country', async (request: IRequest, env: Env) => {
 		const flagObject = await env.FLAG_BUCKET.get(objectKey);
 
 		if (flagObject === null) {
-            // FIX: The error message indicates this line is missing backticks (`).
-            // It should be a template literal string, like this:
+
 			return new Response('Flag not found for ${countryCode]', { status: 404 });
 		}
 
@@ -106,8 +103,8 @@ router.get('/secure/:country', async (request: IRequest, env: Env) => {
 		flagObject.writeHttpMetadata(headers); // Copies ETag, Content-Type, etc.
 		headers.set('etag', flagObject.httpEtag);
 
-		// 3. Return the object body (the image)
-		// The content type is set automatically from the R2 object's metadata.
+		// 3. Return the object body (the flag image)
+
 		return new Response(flagObject.body, {
 			headers,
 		});
@@ -126,13 +123,9 @@ router.all('*', () => new Response('Not Found.', { status: 404 }));
  * Main fetch handler
  */
 export default {
-    // The 'request: Request' type here will now correctly refer to the
-    // global Cloudflare Worker Request type, which includes the '.cf' object.
+
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
         
-        // --- DEBUGGING: Bypass router for ALL /secure routes ---
-        // The router seems to be causing the worker to hang.
-        // We will bypass it for both /secure and /secure/:country paths.
         const url = new URL(request.url);
         const path = url.pathname;
 
@@ -147,7 +140,7 @@ export default {
                 if (match[1]) {
                     const countryCode = match[1].toLowerCase();
 
-                    // --- This is the logic from router.get('/secure/:country') ---
+                    // --- This is the logic from router.get('/secure/:{country}') ---
                     const objectKey = `${countryCode}.svg`
                     
                     // 1. Get the object from R2
@@ -159,7 +152,7 @@ export default {
 
                     // 2. Prepare response headers
                     const headers = new Headers();
-                    flagObject.writeHttpMetadata(headers); // Copies ETag, Content-Type, etc.
+                    flagObject.writeHttpMetadata(headers); 
                     headers.set('etag', flagObject.httpEtag);
 
                     // 3. Return the object body (the image)
@@ -245,7 +238,6 @@ export default {
                 return new Response('Error in /secure bypass: ${e.message}', { status: 500 });
             }
         }
-        // --- END DEBUGGING BYPASS ---
 
 
 		// If it's not a /secure route, let the router handle it (e.g., 404)
