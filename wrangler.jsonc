@@ -7,7 +7,7 @@
 		"enabled": true
 	},
 	"routes": [
-		"tunnel.CensoredDomain/secure*"
+		"tunnel.[CensoredDomain4securityreaons]/secure*"
 	],
 	"r2_buckets": [
 		{
